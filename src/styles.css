@@ -1,0 +1,26 @@
+* {
+	box-sizing: border;
+}
+
+body {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 0;
+	height: 100vh;
+}
+
+#board {
+	display: grid;
+	grid-template-columns: repeat(3, 120px);
+	grid-template-rows: repeat(3, 120px);
+	grid-gap: 10px;
+	background-color: #000;
+}
+
+.square {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #ccc;
+}
