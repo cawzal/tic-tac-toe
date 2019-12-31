@@ -13,16 +13,38 @@
 	<script type="text/javascript" src="main.js" defer></script>
 </head>
 <body>
-	<div id="board">
-		<div data-index="0" class="square"></div>
-		<div data-index="1" class="square"></div>
-		<div data-index="2" class="square"></div>
-		<div data-index="3" class="square"></div>
-		<div data-index="4" class="square"></div>
-		<div data-index="5" class="square"></div>
-		<div data-index="6" class="square"></div>
-		<div data-index="7" class="square"></div>
-		<div data-index="8" class="square"></div>
+	<div id="content-container">
+		<p>Use the player buttons to choose who begins and to reset the game.</p>
+		<div id="controls-container">
+			<div id="select-container">
+				<label>Algorithm:</label>
+				<select id="algorithm">
+					<option value="random">Random</option>
+					<option value="minimax-custom" selected>Minimax (custom)</option>
+					<option value="minimax-basic">Minimax (basic)</option>
+					<option value="minimax-depth">Minimax (depth)</option>
+					<option value="minimax-pruning">Minimax (pruning)</option>
+					<option value="minimax-depth-pruning">Minimax (depth, pruning)</option>
+				</select>
+			</div>
+			<div id="buttons-container">
+				<button id="player-cross">Player X</button>
+				<button id="player-nought">Player O</button>
+			</div>
+		</div>
+		<div id="board-container">
+			<div id="board">
+				<div data-index="0" class="square"></div>
+				<div data-index="1" class="square"></div>
+				<div data-index="2" class="square"></div>
+				<div data-index="3" class="square"></div>
+				<div data-index="4" class="square"></div>
+				<div data-index="5" class="square"></div>
+				<div data-index="6" class="square"></div>
+				<div data-index="7" class="square"></div>
+				<div data-index="8" class="square"></div>
+			</div>
+		</div>
 	</div>
 </body>
 </html>

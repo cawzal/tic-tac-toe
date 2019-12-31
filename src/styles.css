@@ -3,24 +3,85 @@
 }
 
 body {
+	font-family: sans-serif;
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	margin: 0;
 	height: 100vh;
 }
 
+#controls-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px;
+	border: 2px solid #ccc;
+	margin-bottom: 10px;
+}
+
+select {
+	height: 34px;
+	outline: none;
+}
+
+#buttons-container button {
+	padding: 10px 25px;
+	border: 0;
+	background-color: lightblue;
+	outline: none;
+}
+
+#buttons-container button:hover {
+	background-color: cornflowerblue;
+}
+
+#buttons-container button.off {
+	background-color: #ccc;
+}
+
+#buttons-container button.off:hover {
+	background-color: cornflowerblue;
+}
+
+#board-container {
+	padding: 10px;
+	border: 2px solid #ccc;
+}
+
 #board {
 	display: grid;
-	grid-template-columns: repeat(3, 120px);
-	grid-template-rows: repeat(3, 120px);
+	grid-template-columns: repeat(3, 150px);
+	grid-template-rows: repeat(3, 150px);
 	grid-gap: 10px;
-	background-color: #000;
+	background-color: white;
 }
 
 .square {
+	font-size: 6rem;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	background-color: lightblue;
+}
+
+.square:hover {
+	background-color: cornflowerblue;
+}
+
+.nohover:hover {
+	background-color: lightblue;
+}
+
+.over, .over:hover {
 	background-color: #ccc;
+}
+
+.win, .win:hover {
+	background-color: lightgreen;
+}
+
+.lose, .lose:hover {
+	background-color: pink;
 }
