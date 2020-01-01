@@ -38,7 +38,7 @@ let algorithm;
 
 function findEmptyIndexes(state) {
 	const indexes = [];
-	state.forEach((value, index) => {
+	state.forEach(function findEmptyIndex(value, index) {
 		if (value === NUMBER.EMPTY)
 			indexes.push(index);
 	});
@@ -103,8 +103,9 @@ function endGame(state, wasPlayerMove, stateUtility) {
 	});
 
 	if (stateUtility !== 0)  {
-		const className = (wasPlayerMove) ? 'win' : 'lose';
-		(didPlayerStart) ? playerCrossBt.classList.add(className) : playerNoughtBt.classList.add(className);
+		const className = wasPlayerMove ? 'win' : 'lose';
+		const target = didPlayerStart ? playerCrossBt : playerNoughtBt;
+		target.classList.add(className);
 		for (const index of findWinningIndexes(state)) {
 			squares[index].classList.add(className);
 		}
@@ -122,11 +123,14 @@ function resetGame() {
 }
 
 function generateStateFromBoard() {
-	return [...board.children].map((square) => {
+	return [...board.children].map(function convertCharToNumber(square) {
 		switch(square.textContent) {
-			case CHAR.CROSS: return NUMBER.CROSS;
-			case CHAR.NOUGHT: return NUMBER.NOUGHT;
-			default: return NUMBER.EMPTY;
+			case CHAR.CROSS:
+				return NUMBER.CROSS;
+			case CHAR.NOUGHT:
+				return NUMBER.NOUGHT;
+			default:
+				return NUMBER.EMPTY;
 		}
 	});
 }
@@ -136,7 +140,7 @@ function computerGo() {
 	const { index } = algorithm.find(maximise, generateStateFromBoard());
 
 	const target = board.children[index];
-	target.textContent = (didPlayerStart) ? CHAR.NOUGHT : CHAR.CROSS;
+	target.textContent = didPlayerStart ? CHAR.NOUGHT : CHAR.CROSS;
 	target.classList.add('nohover');
 
 	checkGameStateAfterMove(false);
@@ -207,7 +211,7 @@ function boardElClickHandler(event) {
 		}
 	}
 
-	target.textContent = (didPlayerStart) ? CHAR.CROSS : CHAR.NOUGHT;
+	target.textContent = didPlayerStart ? CHAR.CROSS : CHAR.NOUGHT;
 	target.classList.add('nohover');
 	checkGameStateAfterMove(true);
 }
