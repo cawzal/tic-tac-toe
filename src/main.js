@@ -13,10 +13,10 @@ const CHAR = {
 const STATE = {
 	INIT: 0,
 	ACTIVE: 1,
-	OVER: 2
+	END: 2
 };
 
-const configurations = [
+const winningIndexCombinations = [
 	[0, 1, 2],
 	[3, 4, 5],
 	[6, 7, 8],
@@ -36,13 +36,89 @@ let gameState = STATE.INIT;
 let didPlayerStart = true;
 let algorithm;
 
-function generateOptions(state) {
-	const options = [];
-	state.forEach((num, index) => {
-		if (num === NUMBER.EMPTY)
-			options.push(index);
+function findEmptyIndexes(state) {
+	const indexes = [];
+	state.forEach((value, index) => {
+		if (value === NUMBER.EMPTY)
+			indexes.push(index);
 	});
-	return options;
+	return indexes;
+}
+
+function generateStateUtility(state, depth = 0) {
+	for (const [x, y, z] of winningIndexCombinations) {
+		if (state[x] === NUMBER.EMPTY)
+			continue;
+
+		if ((state[x] === state[y]) && (state[y] === state[z])) {
+			const utility = (state[x] === NUMBER.CROSS) ? 1000 - depth : depth - 1000;
+			return { 
+				terminalState: true,
+				utility
+			};
+		}
+	}
+
+	const hasRemainingMoves = state.some(function isEmpty(value) {
+		return value === NUMBER.EMPTY;
+	});
+	if (!hasRemainingMoves) {
+		return {
+			terminalState: true,
+			utility: 0
+		};
+	}
+
+	return {
+		terminalState: false
+	};
+}
+
+function findWinningIndexes(state) {
+	for (const [x, y, z] of winningIndexCombinations) {
+		if (state[x] === NUMBER.EMPTY)
+			continue;
+
+		if ((state[x] === state[y]) && (state[y] === state[z])) {
+			return [x, y, z];
+		}
+	}
+}
+
+function checkGameStateAfterMove(wasPlayerMove) {
+	const state = generateStateFromBoard();
+	const { terminalState, utility } = generateStateUtility(state);
+	if (terminalState) {
+		endGame(state, wasPlayerMove, utility);
+	} else if (wasPlayerMove) {
+		computerGo();
+	}
+}
+
+function endGame(state, wasPlayerMove, stateUtility) {
+	gameState = STATE.END;
+	const squares = [...board.children];
+	squares.forEach(function addEndGameColor(square) {
+		square.classList.add('end');
+	});
+
+	if (stateUtility !== 0)  {
+		const className = (wasPlayerMove) ? 'win' : 'lose';
+		(didPlayerStart) ? playerCrossBt.classList.add(className) : playerNoughtBt.classList.add(className);
+		for (const index of findWinningIndexes(state)) {
+			squares[index].classList.add(className);
+		}
+	}
+}
+
+function resetGame() {
+	gameState = STATE.INIT;
+	[...board.children].forEach(function resetSquare(square) {
+		square.className = 'square';
+		square.textContent = '';
+	});
+	playerCrossBt.className = '';
+	playerNoughtBt.className = '';
 }
 
 function generateStateFromBoard() {
@@ -55,116 +131,15 @@ function generateStateFromBoard() {
 	});
 }
 
-
-function generateUtility(state, depth = -1) {
-	if (depth !== -1) {
-		for (const [x, y, z] of configurations) {
-			if (state[x] === NUMBER.EMPTY)
-				continue;
-
-			if ((state[x] === state[y]) && (state[y] === state[z])) {
-				const utility = (state[x] === NUMBER.CROSS) ? 1000 - depth : depth - 1000;
-				return { 
-					terminal: true,
-					utility: utility
-				};
-			}
-		}
-		const options = generateOptions(state);
-		if (options.length === 0) {
-			return {
-				terminal: true,
-				utility: Math.abs(depth)
-			};
-		}
-	} else {
-		for (const [x, y, z] of configurations) {
-			if (state[x] === NUMBER.EMPTY)
-				continue;
-
-			if ((state[x] === state[y]) && (state[y] === state[z])) {
-				const utility = (state[x] === NUMBER.CROSS) ? 1 : -1;
-				return { 
-					terminal: true,
-					utility: utility
-				};
-			}
-		}
-		const options = generateOptions(state);
-		if (options.length === 0) {
-			return {
-				terminal: true,
-				utility: 0
-			};
-		}
-	}
-	return {
-		terminal: false
-	};
-}
-
-function checkGameStatus(wasPlayer) {
-	const state = generateStateFromBoard();
-	let active = true;
-	let indexes = [];
-
-	for (const [x, y, z] of configurations) {
-		if (state[x] === NUMBER.EMPTY)
-			continue;
-
-		if ((state[x] === state[y]) && (state[y] === state[z])) {
-			active = false;
-			indexes = [x, y, z];
-		}
-	}
-
-	if (!active) {
-		const className = (wasPlayer) ? 'win' : 'lose';
-		gameState = STATE.OVER;
-		[...board.children].forEach((square) => {
-			square.classList.add('over');
-		});
-		for (const index of indexes) {
-			board.children[index].classList.add(className);
-		}
-		return;
-	}
-
-	active = state.some(val => val === NUMBER.EMPTY);
-
-	if (!active) {
-		gameState = STATE.OVER;
-		[...board.children].forEach((square) => {
-			square.classList.add('over');
-		});
-		return;		
-	}
-
-	if (wasPlayer) {
-		computerGo();
-	}
-}
-
-function resetGame() {
-	gameState = STATE.INIT;
-	[...board.children].forEach((square) => {
-		square.className = 'square';
-		square.textContent = '';
-	});
-	playerCrossBt.className = '';
-	playerNoughtBt.className = '';
-	algorithm = null;
-}
-
 function computerGo() {
 	const maximise = (didPlayerStart) ? false : true;
-	const state = generateStateFromBoard();
-	const { index } = algorithm.find(maximise, state);
+	const { index } = algorithm.find(maximise, generateStateFromBoard());
 
-	board.children[index].textContent = (didPlayerStart) ? CHAR.NOUGHT : CHAR.CROSS;
-	board.children[index].classList.add('nohover');
+	const target = board.children[index];
+	target.textContent = (didPlayerStart) ? CHAR.NOUGHT : CHAR.CROSS;
+	target.classList.add('nohover');
 
-	checkGameStatus(false);
+	checkGameStateAfterMove(false);
 }
 
 function playerCrossBegin() {
@@ -212,7 +187,7 @@ function playerNoughtBtClickHandler(event) {
 }
 
 function boardElClickHandler(event) {
-	if (gameState === STATE.OVER)
+	if (gameState === STATE.END)
 		return;
 
 	const index = Number(event.target.dataset.index);
@@ -234,7 +209,7 @@ function boardElClickHandler(event) {
 
 	target.textContent = (didPlayerStart) ? CHAR.CROSS : CHAR.NOUGHT;
 	target.classList.add('nohover');
-	checkGameStatus(true);
+	checkGameStateAfterMove(true);
 }
 
 algorithmSl.addEventListener('change', algorithmSlChangeHandler)

@@ -1,50 +1,62 @@
 class MinimaxPruning {
 	dispatch(maximise, state, alpha = Number.NEGATIVE_INFINITY, beta = Number.POSITIVE_INFINITY) {
-		const { terminal, utility } = generateUtility(state);
-		if (terminal) {
+		const { terminalState, utility } = generateStateUtility(state);
+		if (terminalState) {
 			return { value: utility };
 		}
 		return maximise ? this.max(state, alpha, beta) : this.min(state, alpha, beta);
 	};
 	max(state, alpha, beta) {
-		let value = Number.NEGATIVE_INFINITY;
-		let index;
+		let currentBestValue = Number.NEGATIVE_INFINITY;
+		let currentBestIndex;
 
-		for (const option of generateOptions(state)) {
-			state[option] = NUMBER.CROSS;
+		for (const index of findEmptyIndexes(state)) {
+			state[index] = NUMBER.CROSS;
 			const reply = this.dispatch(false, state, alpha, beta);
-			state[option] = NUMBER.EMPTY;
+			state[index] = NUMBER.EMPTY;
 
-			if (reply.value > value) {
-				value = reply.value;
-				index = option;
+			if (reply.value > currentBestValue) {
+				currentBestValue = reply.value;
+				currentBestIndex = index;
 			}
-			if (value >= beta) {
-				return { index, value };
+			if (currentBestValue >= beta) {
+				return { 
+					index: currentBestIndex,
+					value: currentBestValue
+				};
 			}
-			alpha = Math.max(alpha, value);
+			alpha = Math.max(alpha, currentBestValue);
 		}
-		return { index, value };
+		return {
+			index: currentBestIndex,
+			value: currentBestValue
+		};
 	}
 	min(state, alpha, beta) {
-		let value = Number.POSITIVE_INFINITY;
-		let index;
+		let currentBestValue = Number.POSITIVE_INFINITY;
+		let currentBestIndex;
 
-		for (const option of generateOptions(state)) {
-			state[option] = NUMBER.NOUGHT;
+		for (const index of findEmptyIndexes(state)) {
+			state[index] = NUMBER.NOUGHT;
 			const reply = this.dispatch(true, state, alpha, beta);
-			state[option] = NUMBER.EMPTY;
+			state[index] = NUMBER.EMPTY;
 
-			if (reply.value < value) {
-				value = reply.value;
-				index = option;
+			if (reply.value < currentBestValue) {
+				currentBestValue = reply.value;
+				currentBestIndex = index;
 			}
-			if (value <= alpha) {
-				return { index, value };
+			if (currentBestValue <= alpha) {
+				return { 
+					index: currentBestIndex,
+					value: currentBestValue
+				};
 			}
-			beta = Math.min(beta, value);
+			beta = Math.min(beta, currentBestValue);
 		}
-		return { index, value };
+		return {
+			index: currentBestIndex,
+			value: currentBestValue
+		};
 	}
 	find(maximise, state) {
 		return this.dispatch(maximise, state);

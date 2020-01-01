@@ -12,6 +12,10 @@ body {
 	height: 100vh;
 }
 
+#content-container {
+	text-align: center;
+}
+
 #controls-container {
 	display: flex;
 	justify-content: space-between;
@@ -29,20 +33,20 @@ select {
 #buttons-container button {
 	padding: 10px 25px;
 	border: 0;
-	background-color: lightblue;
+	background-color: #add8e6;
 	outline: none;
 }
 
 #buttons-container button:hover {
-	background-color: cornflowerblue;
+	background-color: #72bcd4
 }
 
 #buttons-container button.off {
-	background-color: #ccc;
+	background-color: #f8ece8;
 }
 
 #buttons-container button.off:hover {
-	background-color: cornflowerblue;
+	background-color: #72bcd4;
 }
 
 #board-container {
@@ -63,25 +67,26 @@ select {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background-color: lightblue;
+	background-color: #add8e6;
+	cursor: pointer;
 }
 
-.square:hover {
-	background-color: cornflowerblue;
+.square:hover, #buttons-container button.win:hover, #buttons-container button.lose:hover {
+	background-color: #72bcd4;
 }
 
 .nohover:hover {
-	background-color: lightblue;
+	background-color: #add8e6;
 }
 
-.over, .over:hover {
-	background-color: #ccc;
+.end, .end:hover {
+	background-color: #f8ece8; /* #e6bbad; */
 }
 
-.win, .win:hover {
-	background-color: lightgreen;
+.win, .win:hover, #buttons-container button.win {
+	background-color: #ade6bb;
 }
 
-.lose, .lose:hover {
-	background-color: pink;
+.lose, .lose:hover, #buttons-container button.lose {
+	background-color: #e6add8;
 }

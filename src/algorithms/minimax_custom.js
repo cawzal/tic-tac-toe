@@ -1,43 +1,47 @@
 class MinimaxCustom extends MinimaxDepth {
-	dispatchCustom(maximise, state, depth = 0) {
-		return maximise ? this.maxCustom(state, depth) : this.minCustom(state, depth);
+	dispatchc(maximise, state, depth = 0) {
+		const { terminalState, utility } = generateStateUtility(state, depth);
+		if (terminalState) {
+			return [{ value: utility }];
+		}
+		return maximise ? this.maxc(state, depth) : this.minc(state, depth);
 	}
-	maxCustom(state, depth) {
-		const options = [];
+	maxc(state, depth) {
+		const moves = [];
 
-		for (const option of generateOptions(state)) {
-			state[option] = NUMBER.CROSS;
+		for (const index of findEmptyIndexes(state)) {
+			state[index ] = NUMBER.CROSS;
 			const reply = this.dispatch(false, state, depth + 1);
-			state[option] = NUMBER.EMPTY;
+			state[index ] = NUMBER.EMPTY;
 
-			options.push({
-				index: option,
+			moves.push({
+				index,
 				value: reply.value
 			});
 		}
-		return options;
+		return moves;
 	}
-	minCustom(state, depth) {
-		const options = [];
+	minc(state, depth) {
+		const moves = [];
 
-		for (const option of generateOptions(state)) {
-			state[option] = NUMBER.NOUGHT;
+		for (const index of findEmptyIndexes(state)) {
+			state[index] = NUMBER.NOUGHT;
 			const reply = this.dispatch(true, state, depth + 1);
-			state[option] = NUMBER.EMPTY;
+			state[index] = NUMBER.EMPTY;
 
-			options.push({
-				index: option,
+			moves.push({
+				index,
 				value: reply.value
 			});
 		};
-		return options;
+		return moves;
 	}
 	findAll(maximise, state) {
-		return this.dispatchCustom(maximise, state);
+		return this.dispatchc(maximise, state);
 	}
 	find(maximise, state) {
-		const func = maximise ? (p => p.value > 0) : (p => p.value < 100);
-		const possibles = this.findAll(maximise, state).filter(func);
-		return possibles[Math.floor(Math.random() * possibles.length)];
+		const winOrDrawMove = maximise ? (move => move.value >= 0) : (move => move.value <= 0);
+		const moves = this.findAll(maximise, state).filter(winOrDrawMove);
+		return moves[Math.floor(Math.random() * moves.length)];
 	}
 }
